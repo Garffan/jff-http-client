@@ -2,25 +2,22 @@
 #include "stdio.h"
 #include "connection.h"
 #include "string.h"
+#include "headers.h"
 
-char* simple_http_get(Uri uri) {
-    // подключаемся к серверу
+char* simple_http_get(Uri uri, Header *headers) {
     net_connection_info con;
     net_connect(&con, uri.host, uri.port);
 
-    // формируем пакет по стандарту http
     char package[256];
-    sprintf(package, "GET %s HTTP/1.1\r\nHost: %s:%d\r\nAccept: */*\r\n\r\n", uri.path, uri.host, uri.port);
+
+    sprintf(package, "GET %s HTTP/1.0\r\n%s\r\n", uri.path, headers_format_rfc(headers));
     printf("::HTTP package len: %zu, content: \n%s\n", strlen(package), package);
 
-    // отправляем пакет по сети серверу
     net_wrtie(con, package);
 
-    // ждём ответ от сервера
     printf("::HTTP reading package...\n");
     char *resp = net_read(con);
 
-    // отключаемся
     net_close(con);
     return resp;
 }
