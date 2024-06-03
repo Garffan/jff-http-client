@@ -7,6 +7,7 @@
 #include "arpa/inet.h"
 #include "string.h"
 #include "unistd.h"
+#include "string-builder.h"
 
 void net_connect(net_connection_info *con, const char* server_host, uint32_t port) {
     struct addrinfo hints, *res;
@@ -57,40 +58,29 @@ void net_wrtie(net_connection_info con, const char* msg) {
 }
 
 char* net_read(net_connection_info con) {
-    ssize_t BUFFER_LENGTH = 1024, bytesRecv = 0;
-    char* buf = (char*)malloc(BUFFER_LENGTH * sizeof(char));
+    jff_string str;
+    const size_t BUF_SIZE = 100;
+    char buf[BUF_SIZE];
+    jff_string_init(&str);
+
     while (1) {
         printf("trying recv() ...\n");
-        ssize_t rc = recvfrom(con.socket_fd, &buf[bytesRecv], BUFFER_LENGTH - bytesRecv, 0, NULL, NULL);
+        ssize_t rc = recvfrom(con.socket_fd, &buf, BUF_SIZE, 0, NULL, NULL);
+
+        jff_string_append(&str, buf);
 
         if (rc < 0) {
             printf("recv() failed %ld\n", rc);
-            free(buf);
             return NULL;
         }
 
         if (rc == 0) {
-            printf("::NET server closed conenction\n");
-            return buf;
+            printf("::NET server closed connection\n");
+            return jff_string_clone(str);
         }
 
-        if (bytesRecv + rc > BUFFER_LENGTH - 100) {
-            BUFFER_LENGTH *= 2;
-            char* p_buf = buf;
-            buf = (char *)realloc(buf, BUFFER_LENGTH * sizeof(char));
-            if (buf == NULL) {
-                printf("not enough memory\n");
-                free(p_buf);
-                return NULL;
-            }
-        }
-
-        bytesRecv += rc;
-
+        memset(buf, 0, BUF_SIZE);
     }
-
-
-    return buf;
 }
 
 void net_close(net_connection_info con) {
