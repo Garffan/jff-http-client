@@ -10,5 +10,6 @@ typedef struct {
 } Uri;
 
 char* simple_http_get(Uri uri, Header* headers);
+char* simple_http_post(Uri uri, Header* headers, char* body);
 
 #endif //HTTP_CLIENT_HTTP_H

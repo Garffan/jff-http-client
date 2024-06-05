@@ -90,6 +90,8 @@ char* headers_format_rfc(Header* lst) {
         p = p->next;
     }
 
+    jff_string_destroy(&line);
+
     return headers.buffer;
 }
 
