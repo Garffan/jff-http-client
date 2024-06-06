@@ -9,10 +9,12 @@ typedef enum {
 } value_type;
 
 typedef struct {
-    void *data;
+    void* data;
     size_t entity_size;
     value_type entity_type;
 } HeaderValue;
+
+void header_value_update(HeaderValue* hv, void* data, value_type type, size_t entity_size);
 
 typedef struct {
     char* key;

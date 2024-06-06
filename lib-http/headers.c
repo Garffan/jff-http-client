@@ -17,7 +17,7 @@ Header* find_by_key(Header* lst, const char* key) {
     return NULL;
 }
 
-Header * find_last(Header *lst) {
+Header* find_last(Header *lst) {
     Header *cur = lst;
     Header *prev = lst;
     while (cur != NULL) {
@@ -95,8 +95,19 @@ char* headers_format_rfc(Header* lst) {
     return headers.buffer;
 }
 
+void header_value_update(HeaderValue* hv, void* data, value_type type, size_t entity_size) {
+    if (hv == NULL) {
+        return;
+    }
+
+    hv->data = data;
+    hv->entity_type = type;
+    hv->entity_size = entity_size;
+}
+
+
 char* int_to_str(uint32_t num) {
-    char* buf = (char *)malloc(32 * sizeof(char));
+    char *buf = (char *)malloc(32 * sizeof(char));
     snprintf(buf, 32, "%d", num);
     return buf;
 }

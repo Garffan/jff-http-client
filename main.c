@@ -49,10 +49,7 @@ void test(const char* host, const char* path, uint16_t port) {
     jff_string_append(&str, ":");
     jff_string_append_int(&str, uri.port);
 
-    // set HOST container
-    header_value.entity_type = value_type_string;
-    header_value.data = jff_string_clone(str);
-    header_value.entity_size = str.len * sizeof(char);
+    header_value_update(&header_value,jff_string_clone(str), value_type_string, str.len * sizeof(char));
 
     headers_set(&headers, "Host", header_value);
 
@@ -60,9 +57,7 @@ void test(const char* host, const char* path, uint16_t port) {
 
     jff_string_append(&str, "*/*");
 
-    header_value.entity_type = value_type_string;
-    header_value.data = jff_string_clone(str);
-    header_value.entity_size = str.len * sizeof(char);
+    header_value_update(&header_value,jff_string_clone(str), value_type_string, str.len * sizeof(char));
 
     headers_set(&headers, "accept", header_value);
 
@@ -92,9 +87,7 @@ void test_post(const char* host, const char* path, uint16_t port) {
     jff_string_append(&str, ":");
     jff_string_append_int(&str, uri.port);
 
-    header_value.entity_type = value_type_string;
-    header_value.data = jff_string_clone(str);
-    header_value.entity_size = str.len * sizeof(char);
+    header_value_update(&header_value,jff_string_clone(str), value_type_string, str.len * sizeof(char));
 
     headers_set(&headers, "Host", header_value);
 
@@ -102,19 +95,15 @@ void test_post(const char* host, const char* path, uint16_t port) {
 
     jff_string_append(&str, "*/*");
 
-    header_value.entity_type = value_type_string;
-    header_value.data = jff_string_clone(str);
-    header_value.entity_size = str.len * sizeof(char);
+    header_value_update(&header_value,jff_string_clone(str), value_type_string, str.len * sizeof(char));
 
     headers_set(&headers, "accept", header_value);
 
     const char* body = "{ \"value\": 45123 }";
 
-    header_value.entity_type = value_type_int;
     int32_t len = (int32_t)strlen(body);
-    header_value.entity_type = value_type_int;
-    header_value.entity_size = sizeof(int32_t);
-    header_value.data = &len;
+
+    header_value_update(&header_value,&len, value_type_int, sizeof(int32_t));
 
     headers_set(&headers, "content-length", header_value);
 
